@@ -1,0 +1,85 @@
+@page "/"
+@inject IJSRuntime JSRuntime
+
+
+<h1>Fun Blazor Web Camera Application</h1>
+<div>
+    <button @onclick="Start">Start</button>
+    <button @onclick="Init">Init</button>
+    <br />
+    <br />
+
+    <label>Base Url</label>
+    <input type="text" @bind-value="@options.BaseUrl" />
+    <br /> 
+    <br />
+
+    <label>User</label>
+    <input type="text" @bind-value="@options.User" />
+    <br />
+
+    <label>Password</label>
+    <input type="password" @bind-value="@options.Pass" />
+    <br />
+    <br />
+    <br />
+    <button @onclick="SwitchPeerIds">Switch Peer Ids</button>
+
+    <br />
+    <label>MyPeerId</label>
+    <input type="text" style="width:330px" @bind-value="@options.MyPeerId" />
+    <br />
+
+    <label>TargetPeerId</label>
+    <input type="text" style="width:330px" @bind-value="@options.TargetPeerId" />
+    <br /> <br />
+
+    <label>Audio</label>
+    <input type="checkbox" style="width:330px" @bind-value="@options.Audio" />
+</div>
+<div>
+    <video id="@options.VideoID"
+        style="background-color:lightblue;"
+        width="@options.Width" autoplay="true">Click start to show video
+    </video>
+    <video id="remote"
+        style="background-color:lightblue;"
+        width="@options.Width" autoplay="true">Click start to show video
+    </video>
+</div>
+@code{
+
+    WebCamOptions options = new WebCamOptions() 
+    { 
+        CanvasID = "canvas",
+        VideoID = "video",
+        BaseUrl = "dev.unicam.app",
+        User = "mornwood23@gmail.com",
+        Pass = "Admin12345!",
+        MyPeerId = "69c60a1f-ac20-4858-87b1-a7884415ad53",
+        TargetPeerId = "c10f6578-6048-494a-a795-e8938824b4cf",
+        Audio = false
+    };
+
+    protected override void OnInitialized()
+    {
+        options.Width = 480;
+    }
+
+    public async Task Start()
+    {
+        await JSRuntime.InvokeVoidAsync("WebCamFunctions.start", options);
+    }
+
+    public void SwitchPeerIds()
+    {
+        var temp = options.MyPeerId;
+        options.MyPeerId = options.TargetPeerId;
+        options.TargetPeerId = temp;
+    }
+
+    public async Task Init()
+    {
+        await JSRuntime.InvokeVoidAsync("WebCamFunctions.init", options);
+    }
+}
