@@ -35,16 +35,16 @@ function buildSignalRConnection() {
 
     sr.on("exchangeIceCandidate", data => {
         console.log("exchangeIceCandidate", data);
-        rtcConnection.addIceCandidate(new RTCIceCandidate(data));
+        rtcConnection.addIceCandidate(new RTCIceCandidate(data.iceCandidate));
 
     });
 
     sr.on("exchangeSdp", data => {
         console.log("exchangeSdp", data);
-
-        if (data.type == 'offer') {
+        targetPeerId = data.sourcePeerId;
+        if (data.sdp.type == 'offer') {
             createPeerConnection()
-            rtcConnection.setRemoteDescription(new RTCSessionDescription(data))
+            rtcConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
                 .then(function () {
                     //                return navigator.mediaDevices.getDisplayMedia(mediaConstraints);
                     return navigator.mediaDevices.getUserMedia(mediaConstraints);
@@ -73,8 +73,8 @@ function buildSignalRConnection() {
                     });
                 })
         }
-        else if (data.type == 'answer') {
-            rtcConnection.setRemoteDescription(new RTCSessionDescription(data))
+        else if (data.sdp.type == 'answer') {
+            rtcConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
         }
     });
 
@@ -87,7 +87,7 @@ srConnection.onclose(connectToSignalingHub);
 // define (re)start function
 async function connectToSignalingHub() {
     try {
-        await srConnection.start();
+        await srConnection.start({ jsonp: true });
         console.log("SignalR Connected.");
     } catch (err) {
         console.log(err);
