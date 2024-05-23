@@ -194,13 +194,12 @@ function createPeerConnection()
     rtcConnection = new RTCPeerConnection({
         iceServers: [
             {
-                urls: [
-                    "stun:stun.l.google.com:19302",
-                    "stun:stun1.l.google.com:19302",
-                    "stun:stun2.l.google.com:19302",
-                    "stun:stun3.l.google.com:19302",
-                    "stun:stun4.l.google.com:19302"
-                ]
+                urls: 'stun:turn.unicam.app:3478'
+            },
+            {
+                urls: ['turn:turn.unicam.app:3478'],
+                username: 'turnuser',
+                credential: 'turnuser456'
             }
         ]
     });
